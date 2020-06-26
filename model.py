@@ -34,9 +34,8 @@ class Actor(nn.Module):
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         self.fc3 = nn.Linear(fc2_units, output_dim)
         
-        # Normalization layers
+        # Normalization layer
         self.bn1 = nn.BatchNorm1d(fc1_units)
-        #self.bn2 = nn.BatchNorm1d(fc2_units)
         
         self.reset_parameters()
         
@@ -78,11 +77,6 @@ class Critic(nn.Module):
         self.seed = torch.manual_seed(seed)
         self.nonlin = NON_LIN
         
-        # Dense layers 
-        
-        # Vanilla DDPG architecture
-        #self.fcs1 = nn.Linear(input_dim, fcs1_units)
-        #self.fc2 = nn.Linear(fcs1_units+action_size, fc2_units)
         
         # Modified DDPG architecture
         self.fcs1 = nn.Linear(input_dim+action_size, fcs1_units)
@@ -92,7 +86,6 @@ class Critic(nn.Module):
         
         # Normalization layers
         self.bn1 = nn.BatchNorm1d(fcs1_units)
-        #self.bn2 = nn.BatchNorm1d(fc2_units)
         
         self.reset_parameters()
         
@@ -110,11 +103,6 @@ class Critic(nn.Module):
         if state.dim() == 1:
             state = torch.unsqueeze(state,0)
 
-        # Vanilla DDPG architecture    
-        #xs = self.nonlin(self.fcs1(state))
-        ###xs = self.bn1(xs) # Batch Normalization after Activation  
-        #x = torch.cat((xs, action.float()), dim=1)
-        
         # Modified DDPG architecture
         xs = torch.cat((state, action.float()), dim=1)
         x = self.nonlin(self.fcs1(xs))
