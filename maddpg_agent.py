@@ -61,7 +61,7 @@ class Maddpg():
                         dones)
 
         # If enough samples in the replay memory and if it is time to update
-        if (len(self.memory) > BATCH_SIZE) and (num_current_episode % UPDATE_EVERY_NB_EPISODE ==0) :
+        if (len(self.memory) > BATCH_SIZE) and (num_current_episode % UPDATE_EVERY ==0) :
             
             # Note: this code only expects 2 agents
             assert(len(self.agents)==2)
@@ -80,8 +80,8 @@ class Maddpg():
     
     def maddpg_learn(self, experiences, own_idx, other_idx, gamma=GAMMA):
         """
-        Update the policy of the MADDPG "own" agent. The actors have only access to agent own 
-        information, whereas the critics have access to all agents information.
+        Update the policy of the MADDPG "own" agent. The actors have only access to their own 
+        information, while the critics have access to all agents information.
         
         Update policy and value parameters using given batch of experience tuples.
         Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
@@ -157,10 +157,10 @@ class Maddpg():
     def checkpoints(self):
         """Save checkpoints for all Agents"""
         for idx, agent in enumerate(self.agents):
-            actor_local_filename = 'model_dir/checkpoint_actor_local_' + str(idx) + '.pth'
-            critic_local_filename = 'model_dir/checkpoint_critic_local_' + str(idx) + '.pth'           
-            actor_target_filename = 'model_dir/checkpoint_actor_target_' + str(idx) + '.pth'
-            critic_target_filename = 'model_dir/checkpoint_critic_target_' + str(idx) + '.pth'            
+            actor_local_filename = model_dir+'/checkpoint_actor_local_' + str(idx) + '.pth'
+            critic_local_filename = model_dir+'/checkpoint_critic_local_' + str(idx) + '.pth'           
+            actor_target_filename = model_dir+'/checkpoint_actor_target_' + str(idx) + '.pth'
+            critic_target_filename = model_dir+'/checkpoint_critic_target_' + str(idx) + '.pth'            
             torch.save(agent.actor_local.state_dict(), actor_local_filename) 
             torch.save(agent.critic_local.state_dict(), critic_local_filename)             
             torch.save(agent.actor_target.state_dict(), actor_target_filename) 

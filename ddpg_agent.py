@@ -21,10 +21,10 @@ WEIGHT_DECAY = 0.       # L2 weight decay
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Agent():
-    """DDPG Agent : Interacts with and learns from the environment."""
+    """Agent which interacts and learns from environment"""
     
     def __init__(self, state_size, action_size, random_seed, num_agents=1):
-        """Initialize a DDPG Agent object.
+        """Initialize Agent object.
         
         Params
         ======
@@ -38,12 +38,12 @@ class Agent():
         self.seed = random.seed(random_seed)
         self.num_agents = num_agents
 
-        # Actor Network (w/ Target Network)
+        # Actor Network 
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
         self.actor_target = Actor(state_size, action_size, random_seed).to(device)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
         
-        # Make sure the Actor Target Network has the same weight values as the Local Network
+        # Copy the Actor Target Network weight values as the Local Network
         for target, local in zip(self.actor_target.parameters(), self.actor_local.parameters()):
             target.data.copy_(local.data)
 
@@ -59,15 +59,10 @@ class Agent():
 
         # Noise process
         self.noise = OUNoise(action_size, random_seed)
-
-        # Replay memory : in MADDPG, the ReplayBuffer is common to all agents
-        #self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
         
     
     def step(self, state, action, reward, next_state, done):
-        ##TODO : not used with MADDPG ..
         """Save experience in replay memory, and use random sample from buffer to learn."""
-        # Save experience / reward
         self.memory.add(state, action, reward, next_state, done)
 
         # Learn, if enough samples are available in memory
@@ -169,7 +164,6 @@ class OUNoise:
     def sample(self):
         """Update internal state and return it as a noise sample."""
         x = self.state
-        #dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
         dx = self.theta * (self.mu - x) + self.sigma * np.random.randn(self.size) # use normal distribution
         self.state = x + dx
         return self.state
